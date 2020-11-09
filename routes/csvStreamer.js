@@ -10,10 +10,10 @@ const csv = require("fast-csv");
 const csvSplitStream = require('csv-split-stream');
 const { count } = require("console");
 const express = require('express')
+const request = require('request')
+let router = express.Router();
 
 console.log("Hi");
-let router = express.Router();
-var server = express();
  
     // fs.readFile('sandpiles.csv', 'utf8', function (err, data) {
     //   var dataArray = data.split(/\r?\n/);
@@ -26,27 +26,20 @@ var server = express();
     //     .on('data', row => console.log(`ROW=${JSON.stringify(row)}`))
     //     .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
 
-  router.post('/csvStreamer', async (req, res, next) => {
+  //   router.post('/csvStreamer', async (req, res, next) => {
+  //     console.log("test");
 
-      console.log("Hello");
-      let job = new JobPayload();
-      job.input = new JobPayloadInput();
-      job.input.urn = req.body.objectName;
-      job.output = new JobPayloadOutput([
-          new JobSvfOutputPayload()
-      ]);
-      job.output.formats[0].type = 'svf';
-      job.output.formats[0].views = ['2d', '3d'];
-      try {
-          // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
-          await new DerivativesApi().translate(job, {}, req.oauth_client, req.oauth_token);
-          res.status(200).end();
-      } catch(err) {
-          next(err);
-      }
-  });
+  //     try {
+  //         // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
+  //         await new DerivativesApi().translate(job, {}, req.oauth_client, req.oauth_token);
+  //         res.status(200).end();
+  //     } catch(err) {
+  //         next(err);
+  //     }
+  // });
+
     var counter = 0;
-    var f = fs.createReadStream('./output/sandpiles.csv')
+    var f = fs.createReadStream('./public/data/output/sandpiles.csv')
 
     f
         .pipe(csv.parse())
@@ -74,12 +67,12 @@ var server = express();
 
     function _counterFn(counter){
         console.log(counter)
-       const filepath = './output';
+       const filepath = './public/data/output';
    
         var cell = counter;
    
        return csvSplitStream.split(
-         fs.createReadStream('./output/sandpiles.csv'),
+         fs.createReadStream('./public/data/output/sandpiles.csv'),
          {
            lineLimit: cell
          },
@@ -100,6 +93,4 @@ var server = express();
    
     }
     
-    module.exports = {
-        _counterFn
-    }
+    module.exports = router;

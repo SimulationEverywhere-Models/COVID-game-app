@@ -34,7 +34,7 @@
 // JSON.stringify(a) into 
 // viewer.restoreState()
 
-let geom;
+let geomPoints;
 
 class covidGameExtension extends Autodesk.Viewing.Extension {
   constructor(viewer, options) {
@@ -66,7 +66,7 @@ class covidGameExtension extends Autodesk.Viewing.Extension {
     if (renderPointCloud) {
       this.points = this._generatePointCloud();
       this.points.scale.set(23, 19, 5); //Match size with project size. (unit: inch)
-      geom = this.points;
+      geomPoints = this.points;
       this.viewer.impl.createOverlayScene("pointclouds");
       this.viewer.impl.addOverlay("pointclouds", this.points);
 

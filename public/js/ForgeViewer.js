@@ -8,7 +8,12 @@ function launchViewer(urn) {
 
   Autodesk.Viewing.Initializer(options, () => {
     viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: [
-      'covidGameExtension',
+      'Autodesk.DocumentBrowser',
+      'HeatMapFloorFlat',
+      'MyAwesomeExtension',
+      'NestedViewerExtension',
+      'DataExtractExtension',
+      //'covidGameExtension',
       'Autodesk.AEC.LevelsExtension', 
       'Autodesk.AEC.Minimap3DExtension'
     ] });

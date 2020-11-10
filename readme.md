@@ -37,3 +37,10 @@ CSV parser and formatter
 [csv-split-stream](https://www.npmjs.com/package/csv-split-stream)
 
 Turn local CSV file into many CSV files
+
+#### Authors
+
+- Dr. Vinu Subashini Rajus
+- Omar Kawach 
+- Mitali Patel
+- Ryan Carriere

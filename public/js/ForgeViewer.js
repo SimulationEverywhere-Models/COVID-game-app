@@ -7,17 +7,33 @@ function launchViewer(urn) {
   };
 
   Autodesk.Viewing.Initializer(options, () => {
-    viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: [ 'Autodesk.DocumentBrowser','HeatMapFloorFlat','MyAwesomeExtension','NestedViewerExtension','DataExtractExtension'] });
+    viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: [
+      'covidGameExtension',
+      'Autodesk.AEC.LevelsExtension', 
+      'Autodesk.AEC.Minimap3DExtension'
+    ] });
+
     viewer.start();
     var documentId = 'urn:' + urn;
     Autodesk.Viewing.Document.load(documentId, onDocumentLoadSuccess, onDocumentLoadFailure);
+
   });
 }
 
 function onDocumentLoadSuccess(doc) {
   var viewables = doc.getRoot().getDefaultGeometry();
+
+  // Import for getting AECModelData
+  // Model Derivative API
+  doc.downloadAecModelData()
+
   viewer.loadDocumentNode(doc, viewables).then(i => {
     // documented loaded, any action?
+    
+    // Minimap load 
+    viewer.addEventListener( Autodesk.Viewing.TEXTURES_LOADED_EVENT, ()=>{
+      viewer.getExtension("Autodesk.BimWalk").activate();
+  });
   });
 }
 

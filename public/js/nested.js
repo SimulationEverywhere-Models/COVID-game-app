@@ -1,16 +1,19 @@
+var prevPos = 0;
+
 class NestedViewerExtension extends Autodesk.Viewing.Extension {
     constructor(viewer, options) {
         super(viewer, options);
         this._group = null;
         this._button = null;
     }
-
     load() {
+        console.log(prevPos);
         this.createToolbar();
         console.log('NestedViewerExtensions has been loaded');
+        //this.viewer.navigation.setCamera(THREE.Vector3(59.91213368381141, -63.325886161864766, 0.09867663643945346));
+        this.viewer.addEventListener(Autodesk.Viewing.CAMERA_CHANGE_EVENT, this.onCameraChange);
         return true;
     }
-
     unload() {
         // Clean our UI elements if we added any
         if (this._group) {
@@ -22,7 +25,14 @@ class NestedViewerExtension extends Autodesk.Viewing.Extension {
         console.log('NestedViewerExtensions has been unloaded');
         return true;
     }
-
+    onCameraChange() {
+        const ray = new THREE.Ray(viewer.navigation.getPosition(), viewer.navigation.getEyeVector());
+        const intersections = viewer.impl.rayIntersect(ray, false);
+        if(intersections && intersections.distance <= 2) {
+            viewer.navigation.setPosition(prevPos);
+        }
+        prevPos = viewer.navigation.getPosition();
+    }
     createToolbar(){
         var toolbar = new Autodesk.Viewing.UI.ToolBar('toolbar-TtIf');
 
@@ -32,13 +42,13 @@ class NestedViewerExtension extends Autodesk.Viewing.Extension {
 
             // Names, icons and tooltips for our toolbar buttons
             var names = ['CGB1', 'CGB2', 'CGB3','CGB4'];
-            var icons = ['search', 'fire', 'flash', 'dashboard'];
-            var tips = ['Search', 'Temperature', 'Power','Dashboard'];
+            var icons = ['play', 'fire', 'flash', 'dashboard'];
+            var tips = ['Play', 'Temperature', 'Power','Dashboard'];
             
             // Operations for when the buttons are clicked
             var clicks =
             [
-            function () { console.log('Dashboard clicked'); },
+            function () { setStartingPos(); },
             function () { console.log('Temperature clicked'); },
             function () { console.log('Power clicked'); }
             ]
@@ -155,7 +165,69 @@ class NestedViewerExtension extends Autodesk.Viewing.Extension {
               
                 ].join('\n');
                   $('<style type="text/css">' + css + '</style>').appendTo('head');
-            }           
+            }    
+            
+
 }
 
 Autodesk.Viewing.theExtensionManager.registerExtension('NestedViewerExtension', NestedViewerExtension);
+// Autodesk.Viewing.theExtensionManager.loadExtension("Autodesk.BimWalk");
+
+// viewer.getExtension("Autodesk.BimWalk").tool.navigator.handleKeyDown = function (event, keyCode) {
+//   var handled = true;
+//   switch (keyCode) {
+//     case this.keys.SHIFT:
+//       this.running = true;
+//       break;
+//     case this.keys.DASH:
+//       var topSpeed = this.get('topWalkSpeed') - 1;
+//       this.tool.set('topWalkSpeed', topSpeed);
+//       break;
+//     case this.keys.EQUALS:
+//     case this.keys.PLUS:
+//     case this.keys.PLUSMOZ:
+//       var topSpeed = this.get('topWalkSpeed') + 1;
+//       this.tool.set('topWalkSpeed', topSpeed);
+//       break;
+//     case this.keys.CONTROL:
+//     case this.keys.ALT:
+//       break;
+//     case this.keys.SPACE:
+//       this.enableGravity(!this.gravityEnabled);
+//       break;
+//     case this.keys.UP:
+//     case this.keys.w:
+//       this.moveForward = 1.0;
+//       break;
+//     case this.keys.LEFT:
+//       break;
+//     case this.keys.RIGHT:
+//       break;
+//     case this.keys.DOWN:
+//     case this.keys.s:
+//       break;
+//     case this.keys.a:
+//       break;
+//       break;
+//     case this.keys.e:
+//       break;
+//     case this.keys.q:
+//       break;
+//     default:
+//       handled = false;
+//       break;}
+//   this.running = event.shiftKey;
+//   if (this.ui.onKeyDown) {
+//     handled |= this.ui.onKeyDown(event, keyCode);
+//   }
+//   return handled;
+// };
+
+function setStartingPos() {
+  let a = viewer.navigation;
+  const v = new THREE.Vector3(60.35667198613261, -72.79151941613085, 0.09867663643945346);
+  a.setPosition(v);
+}
+
+
+

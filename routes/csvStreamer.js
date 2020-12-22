@@ -46,12 +46,9 @@ router.get("/reading", async (req, res, next) => {
         time: parseInt(row[0]),
         x: parseInt(row[1]),
         y: parseInt(row[2]),
-        prev_inhaled: parseInt(row[3]),
-        curr_inhaled: parseInt(row[4]),
-        previous_state: parseInt(row[5]),
-        current_state: parseInt(row[6]),
-        prev_type: parseInt(row[8]),
-        curr_type: parseInt(row[8]),
+        inhaled: parseInt(row[3]),
+        state: parseInt(row[4]),
+        type: parseInt(row[5]),
       });
     })
     .on("end", () => {

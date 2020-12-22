@@ -9,11 +9,7 @@ function launchViewer(urn) {
   Autodesk.Viewing.Initializer(options, () => {
     viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: [
       'Autodesk.DocumentBrowser',
-      'HeatMapFloorFlat',
-      'MyAwesomeExtension',
-      'NestedViewerExtension',
-      'DataExtractExtension',
-      //'covidGameExtension',
+      'GameExtension',
       'Autodesk.AEC.LevelsExtension', 
       'Autodesk.AEC.Minimap3DExtension'
     ] });
@@ -36,9 +32,9 @@ function onDocumentLoadSuccess(doc) {
     // documented loaded, any action?
     
     // Minimap load 
-    viewer.addEventListener( Autodesk.Viewing.TEXTURES_LOADED_EVENT, ()=>{
-      viewer.getExtension("Autodesk.BimWalk").activate();
-  });
+  //   viewer.addEventListener( Autodesk.Viewing.TEXTURES_LOADED_EVENT, ()=>{
+  //     viewer.getExtension("Autodesk.BimWalk").activate();
+  // });
   });
 }
 

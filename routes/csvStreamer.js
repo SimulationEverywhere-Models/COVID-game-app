@@ -1,96 +1,85 @@
-"use strict";
-
-// Typescript works better
-//import * as csv from "@fast-csv/parse";
-
-//import { fs } from "fs";
-
 const fs = require("fs");
 const csv = require("fast-csv");
-const csvSplitStream = require('csv-split-stream');
-const { count } = require("console");
-const express = require('express')
-const request = require('request')
+const csvSplitStream = require("csv-split-stream");
+const express = require("express");
+
 let router = express.Router();
+let self = this;
 
-console.log("Hi");
- 
-    // fs.readFile('sandpiles.csv', 'utf8', function (err, data) {
-    //   var dataArray = data.split(/\r?\n/);
-    //   console.log(dataArray);
-    // });
+router.get("/streaming", async (req, res, next) => {
+  req.setTimeout(0);
+  self.res = res
+  var counter = 0;
+  //let resp = ['1'];
+  var file = req.query.filepath;
+  var f = fs.createReadStream(req.query.filepath);
+  f.pipe(csv.parse())
+    .on("error", (error) => console.error(error))
+    .on(
+      "data",
+      (row) => {
+        if (row[0] == '10' || row[0] == 10) { counter++; }
 
-    // fs.createReadStream('sandpiles.csv')
-    //     .pipe(csv.parse())
-    //     .on('error', error => console.error(error))
-    //     .on('data', row => console.log(`ROW=${JSON.stringify(row)}`))
-    //     .on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
-
-  //   router.post('/csvStreamer', async (req, res, next) => {
-  //     console.log("test");
-
-  //     try {
-  //         // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
-  //         await new DerivativesApi().translate(job, {}, req.oauth_client, req.oauth_token);
-  //         res.status(200).end();
-  //     } catch(err) {
-  //         next(err);
-  //     }
-  // });
-
-    var counter = 0;
-    var f = fs.createReadStream('./public/data/output/sandpiles.csv')
-
-    f
-        .pipe(csv.parse())
-        .on('error', error => console.error(error))
-        .on('data', row => {
-
-                  if(row[0] == 1){
-                      counter++;
-                      //console.log(counter);
-                   }   
-                    if(row[0]== 2){
-                        f.pause()
-                        f.emit("end")
-                        // f.unpipe(csv.parse())
-                        // csv.parse().end()
-                    }
-              }
-              //console.log(`ROW=${JSON.stringify(row)}`)
-         )
-        //.on('end', rowCount => console.log(`Parsed ${rowCount} rows`));
-
-    .on('end', rowCount =>{  _counterFn(counter); }
-         // console.log(counter)
+        if (row[0] == '20' || row[0] == 20) {
+          f.pause();
+          f.emit("end");
+        }
+      }
+    )
+    .on(
+      "end",
+      (rowCount) => {
+        _counterFn(counter, req.query.output, file);
+        //res.send(resp);
+      }
     );
+});
 
-    function _counterFn(counter){
-        console.log(counter)
-       const filepath = './public/data/output';
-   
-        var cell = counter;
-   
-       return csvSplitStream.split(
-         fs.createReadStream('./public/data/output/sandpiles.csv'),
-         {
-           lineLimit: cell
-         },
-         (index) => fs.createWriteStream(`${filepath}/output-${index}.csv`)
-       )
-       .then(csvSplitResponse => {
-         console.log('csvSplitStream succeeded.', csvSplitResponse);
-         // outputs: {
-         //  "totalChunks": 350,
-         //  "options": {
-         //    "delimiter": "\n",
-         //    "lineLimit": "10000"
-         //  }
-         // }
-       }).catch(csvSplitError => {
-         console.log('csvSplitStream failed!', csvSplitError);
-       });
-   
-    }
-    
-    module.exports = router;
+
+router.get("/reading", async (req, res, next) => {
+  var f = fs.createReadStream(req.query.filepath);
+  let data = [];
+  f.pipe(csv.parse())
+    .on("error", (error) => console.error(error))
+    .on("data", (row) => {
+      data.push({
+        time: parseInt(row[0]),
+        x: parseInt(row[1]),
+        y: parseInt(row[2]),
+        prev_inhaled: parseInt(row[3]),
+        curr_inhaled: parseInt(row[4]),
+        previous_state: parseInt(row[5]),
+        current_state: parseInt(row[6]),
+        prev_type: parseInt(row[8]),
+        curr_type: parseInt(row[8]),
+      });
+    })
+    .on("end", () => {
+      data.shift();
+      res.send(data);
+    });
+});
+
+function sendResponse(chunks){
+  self.res.send(chunks)
+}
+
+async function _counterFn(counter,resultname,file) {
+  const filepath = './public/data/output';
+  return csvSplitStream.split(
+    fs.createReadStream(file),
+    {
+      lineLimit: counter
+    },
+    //(index) => fs.createWriteStream(`${filepath}/output-${index}.csv`)
+    (index) => fs.createWriteStream(`${filepath}/${resultname}-${index}.csv`),
+  )
+    .then(csvSplitResponse => {
+      console.log('csvSplitStream succeeded.'); //, csvSplitResponse);
+      sendResponse(csvSplitResponse)
+    }).catch(csvSplitError => {
+      //console.log('csvSplitStream failed!', csvSplitError);
+    });
+}
+
+module.exports = router;

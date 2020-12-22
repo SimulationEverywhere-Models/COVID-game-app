@@ -32,6 +32,21 @@ An interactive learning environment based on real-world models for indoor COVID 
 
 See ```launch.json``` in the ```.vscode``` folder. Enter your client ID and secret there. 
 
+###### Convert Simulation Results to CSV
+Place your ```state.txt``` file into the ```scripts``` folder, then cd into the ```scripts``` folder and run the following command in terminal:
+
+```cat state.txt | python state-txt-to-csv.py```
+
+This will output ```state_change.csv```
+
+###### Create Folder(s) for Simulation Data
+1. Create an ```data``` folder inside the ``public`` folder
+2. Create an ```output``` folder inside ```data``` folder 
+   -  This is where the split CSVs will be stored.
+3. Rename your ```state_change.csv``` based on whether the data is MaskOn or MaskOff. 
+   - For example, ```state_change_On.csv``` if you have data for MaskOn.
+4. Place renamed csv in the ```output``` folder
+
 ## Plans for the Future
 
 Virtual Reality! 

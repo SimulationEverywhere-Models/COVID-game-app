@@ -375,7 +375,7 @@ class GameExtension extends Autodesk.Viewing.Extension {
       // Item to update
       let k = m.x * this.maxY + m.y;
 
-      if (m.current_state > 0) {
+      if (m.state > 0) {
         let x = particlePositions[3 * k];
         let y = particlePositions[3 * k + 1];
 
@@ -397,8 +397,8 @@ class GameExtension extends Autodesk.Viewing.Extension {
 
       // If an air particle and has viral load
       if (
-        (m.curr_type == -100 || m.curr_type == -200 || m.curr_type == -800) &&
-        m.current_state != 0
+        (m.type == -100 || m.type == -200 || m.type == -800) &&
+        m.state != 0
       ) {
         particleIconAndOpacity[2 * k] = 0;
         particleIconAndOpacity[2 * k + 1] = 0.7;
@@ -406,7 +406,7 @@ class GameExtension extends Autodesk.Viewing.Extension {
         particleIconAndOpacity[2 * k] = 0;
         particleIconAndOpacity[2 * k + 1] = 0;
       }
-      let color = new THREE.Color(this.colorScale(m.current_state));
+      let color = new THREE.Color(this.colorScale(m.state));
       color.toArray(particleColors, k * 3);
     }
 

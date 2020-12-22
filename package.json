@@ -1,0 +1,21 @@
+{
+  "name": "forge-hackathon",
+  "version": "1.0.0",
+  "description": "AEC hack",
+  "main": "start.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "forge"
+  ],
+  "author": "Mitali",
+  "license": "MIT",
+  "dependencies": {
+    "csv-split-stream": "^1.0.2",
+    "express": "^4.17.1",
+    "fast-csv": "^4.3.5",
+    "forge-apis": "^0.7.3",
+    "multer": "^1.4.2"
+  }
+}
